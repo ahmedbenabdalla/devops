@@ -282,17 +282,6 @@ public class EmployeServiceImpl implements IEmployeService {
 		}
 
 	}
-	public int dif()
-	{   
-		int a=1 , b=0;
-		int res=0;
-	  try{
-		  res=a/b;
-		 
-	  }catch (Exception e) {
-		  logger.error("erreur dans l'opperation de diffussion");
-	}
-	  return res;
-	}
+	
 
 }
