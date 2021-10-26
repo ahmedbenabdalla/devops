@@ -126,11 +126,6 @@ public class EmployeTest {
 			i++;
 		}
 	}
-	@Test
-	public void dif()
-	{
-		employeService.dif();
-		
-	}
+
 
 }
