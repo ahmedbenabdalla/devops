@@ -52,7 +52,7 @@ public class EmployeTest {
 	@Test
 	public void mettreAjourEmailByEmployeId() {
 		employeService.mettreAjourEmailByEmployeId("ahmed@esprit.tn", 3);
-		assertEquals("fail to add  new employe", "ahmed@esprit.tn", employeRepository.findById(3).get().getEmail());
+		assertEquals("fail to add  new employe", "ahmed@esprit.tn", employeRepository.findById(3).orElseThrow(null).getEmail());
 	}
     /*
 	@Test
@@ -72,7 +72,7 @@ public class EmployeTest {
 		int ref = employeService.ajouterContrat(contrat);
 		List<Contrat> contrats = (List<Contrat>) contratRepository.findAll();
 		assertNotNull("échouer pour ajouter Contrat",
-				contrats.stream().filter(c -> c.getReference() == ref).findAny().get());
+				contrats.stream().filter(c -> c.getReference() == ref).findAny().orElseThrow(null));
 	}
 
 	@Test
@@ -83,15 +83,16 @@ public class EmployeTest {
 		int idE = employeService.ajouterEmploye(employe);
 		employeService.affecterContratAEmploye(idC, idE);
 		assertTrue("affectation contrat a employer echouer",
-				employeRepository.findById(idE).get().getContrat().getReference() == idC);
+				employeRepository.findById(idE).orElseThrow(null).getContrat().getReference() == idC);
 	}
 
 	@Test
 	public void getEmployePrenomById() {
-		Employe e = new Employe("Ahmed", "ben Abdallah", "@gmail.com", false, Role.TECHNICIEN);
+		String lastName="ben Abdallah";
+		Employe e = new Employe("Ahmed",lastName , "@gmail.com", false, Role.TECHNICIEN);
 		int id = employeService.ajouterEmploye(e);
-		assertEquals("échouer pour reccuperer email employer", employeRepository.findById(id).get().getPrenom(),
-				"ben Abdallah");
+		assertEquals("échouer pour reccuperer email employer", employeRepository.findById(id).orElseThrow(null).getPrenom(),
+				lastName);
 
 	}
 

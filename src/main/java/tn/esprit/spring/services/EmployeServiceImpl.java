@@ -4,7 +4,7 @@ package tn.esprit.spring.services;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
+
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,11 +54,11 @@ public class EmployeServiceImpl implements IEmployeService {
 		try {
 			logger.info("je suis dans mettreAjourEmailByEmployeId");
 			logger.debug("je vais modifier l'email de l'employer employer");
-			Optional<Employe> employe = employeRepository.findById(employeId);
-			employe.get().setEmail(email);
-			logger.debug("je viens de finir l'operation mettreAjourEmailByEmployeId de l'employer :" + employe.get().getNom()
+			Employe employe = employeRepository.findById(employeId).orElseThrow(null);
+			employe.setEmail(email);
+			logger.debug("je viens de finir l'operation mettreAjourEmailByEmployeId de l'employer :" + employe.getNom()
 					+ " avec email " + email);
-			employeRepository.save(employe.get());
+			employeRepository.save(employe);
 		} catch (Exception e) {
 			logger.error("erreur dans mettreAjourEmailByEmployeId:" + e);
 		}
@@ -68,8 +68,8 @@ public class EmployeServiceImpl implements IEmployeService {
 	public void affecterEmployeADepartement(int employeId, int depId) {
 		try {
 			logger.info("je suis dans affecterEmployeADepartement");
-			Departement depManagedEntity = deptRepoistory.findById(depId).get();
-			Employe employeManagedEntity = employeRepository.findById(employeId).get();
+			Departement depManagedEntity = deptRepoistory.findById(depId).orElseThrow(null);
+			Employe employeManagedEntity = employeRepository.findById(employeId).orElseThrow(null);
 			logger.debug("je vais affecter l'employe :" + employeManagedEntity.toString() + " a la departement :"
 					+ depManagedEntity.toString());
 			if (depManagedEntity.getEmployes() == null) {
@@ -93,7 +93,7 @@ public class EmployeServiceImpl implements IEmployeService {
 	public void desaffecterEmployeDuDepartement(int employeId, int depId) {
 		try {
 			logger.info("je suis dans desaffecterEmployeDuDepartement");
-			Departement dep = deptRepoistory.findById(depId).get();
+			Departement dep = deptRepoistory.findById(depId).orElseThrow(null);
 			logger.debug("je vais dessaffeccter l'employe  a la departement :" + dep.toString());
 
 			int employeNb = dep.getEmployes().size();
@@ -126,8 +126,8 @@ public class EmployeServiceImpl implements IEmployeService {
 	public void affecterContratAEmploye(int contratId, int employeId) {
 		try {
 			logger.info("je suis dans affecterContratAEmploye");
-			Contrat contratManagedEntity = contratRepoistory.findById(contratId).get();
-			Employe employeManagedEntity = employeRepository.findById(employeId).get();
+			Contrat contratManagedEntity = contratRepoistory.findById(contratId).orElseThrow(null);
+			Employe employeManagedEntity = employeRepository.findById(employeId).orElseThrow(null);
 			contratManagedEntity.setEmploye(employeManagedEntity);
 			contratRepoistory.save(contratManagedEntity);
 			logger.info("je viens de finir l'operation affecterContratAEmploye");
@@ -140,7 +140,7 @@ public class EmployeServiceImpl implements IEmployeService {
 	public String getEmployePrenomById(int employeId) {
 		try {
 			logger.info("je suis dans getEmployePrenomById");
-			Employe employeManagedEntity = employeRepository.findById(employeId).get();
+			Employe employeManagedEntity = employeRepository.findById(employeId).orElseThrow(null);
 			logger.debug("je viens de finir l'operation getEmployePrenomById");
 			return employeManagedEntity.getPrenom();
 		} catch (Exception e) {
@@ -153,7 +153,7 @@ public class EmployeServiceImpl implements IEmployeService {
 	public void deleteEmployeById(int employeId) {
 		try {
 			logger.info("je suis dans deleteEmployeById");
-			Employe employe = employeRepository.findById(employeId).get();
+			Employe employe = employeRepository.findById(employeId).orElseThrow(null);
 			// Desaffecter l'employe de tous les departements
 			// c'est le bout master qui permet de mettre a jour
 			// la table d'association
@@ -171,7 +171,7 @@ public class EmployeServiceImpl implements IEmployeService {
 	public void deleteContratById(int contratId) {
 		try {
 			logger.info("je suis dans deleteContratById");
-			Contrat contratManagedEntity = contratRepoistory.findById(contratId).get();
+			Contrat contratManagedEntity = contratRepoistory.findById(contratId).orElseThrow(null);
 			contratRepoistory.delete(contratManagedEntity);
 			logger.info("je viens de finir l'operation deleteContratById");
 		} catch (Exception e) {
@@ -266,19 +266,20 @@ public class EmployeServiceImpl implements IEmployeService {
 			return timesheetRepository.getTimesheetsByMissionAndDate(employe, mission, dateDebut, dateFin);
 		} catch (Exception e) {
 			logger.error("erreur dans getTimesheetsByMissionAndDate :" + e);
-			return null;
+			return new ArrayList<>();
 		}
 
 	}
 
 	public List<Employe> getAllEmployes() {
+		
 		try {
 			logger.info("je suis dans getAllEmployes");
 			logger.debug("je viens de terminer l'operation getAllEmployes");
-			return (List<Employe>) employeRepository.findAll();
+			return  (List<Employe>) employeRepository.findAll();
 		} catch (Exception e) {
 			logger.error("erreur dans getAllEmployes :" + e);
-			return null;
+			return new ArrayList<>();
 		}
 
 	}
