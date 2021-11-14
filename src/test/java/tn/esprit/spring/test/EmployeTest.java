@@ -90,9 +90,8 @@ public class EmployeTest {
 	@Test
 	public void ajouterContrat() {
 		
-		List<Contrat> contrats = (List<Contrat>) contratRepository.findAll();
-		assertNotNull("échouer pour ajouter Contrat",
-				contrats.stream().filter(c -> c.getReference() == idC).findAny().orElseThrow(null));
+		assertTrue("échouer pour ajouter Contrat",
+				contratRepository.findById(idC).isPresent());
 	}
 
 	@Test
