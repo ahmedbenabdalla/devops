@@ -10,6 +10,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import tn.esprit.spring.entities.Contrat;
-
+import tn.esprit.spring.entities.Departement;
 import tn.esprit.spring.entities.Employe;
 import tn.esprit.spring.entities.Role;
 import tn.esprit.spring.repository.ContratRepository;
@@ -39,61 +41,73 @@ public class EmployeTest {
 	DepartementRepository departementRepository;
 	@Autowired
 	ContratRepository contratRepository;
+	
+	int employeId;
+	Employe employe;
+	int depId;
+	int idC;
+	String lastName;
+	@Before public void initialisation()
+	{
+		depId=departementRepository.save(new Departement("esprit")).getId();
+		lastName="ben abdallah";
+		employe = new Employe("ahmed", "ben abdallah", "ahmed@gmail.com", false, Role.TECHNICIEN);
+		employeId = employeService.ajouterEmploye(employe);
+		Contrat contrat = new Contrat(new Date(), "CDI", 1200.5f);
+		idC = contratRepository.save(contrat).getReference();
+	}
+	@After public void supression()
+	{
+		departementRepository.deleteById(depId);
+		employeRepository.deleteById(employeId);
+		contratRepository.deleteById(idC);
+    }
+	
 
 	@Test
 	public void ajouterEmploye() {
-
-		int employeId;
-		Employe employe = new Employe("ahmed", "ben abdallah", "ahmed@gmail.com", false, Role.TECHNICIEN);
-		employeId = employeService.ajouterEmploye(employe);
 		assertTrue("ajout employer echouer", employeRepository.findById(employeId).isPresent());
 	}
 
 	@Test
 	public void mettreAjourEmailByEmployeId() {
-		employeService.mettreAjourEmailByEmployeId("ahmed@esprit.tn", 3);
-		assertEquals("fail to add  new employe", "ahmed@esprit.tn", employeRepository.findById(3).orElseThrow(null).getEmail());
+		employeService.mettreAjourEmailByEmployeId("ahmed@esprit.tn", employeId);
+		assertEquals("fail to add  new employe", "ahmed@esprit.tn", employeRepository.findById(employeId).orElseThrow(null).getEmail());
 	}
-    /*
+    
 	@Test
 	public void affecterEmployeADepartement() {
-		employeService.affecterEmployeADepartement(3, 1);
-		List<Employe> emps = departementRepository.findById(1).get().getEmployes();
-		for (Employe employe : emps) {
-			System.out.println(employe.getNom());
-		}
 		assertTrue("affectation employer a departement echouer",
-				departementRepository.findById(1).get().getEmployes().contains(employeRepository.findById(3).get()));
+				employeService.affecterEmployeADepartement(employeId, depId));
 	}
-    */
+	@Test
+	public void desaffecterEmployeDuDepartement()
+	{
+		
+		assertTrue("desaffecter employer a departement echouer", employeService.desaffecterEmployeDuDepartement(employeId, depId));
+	}
+    
 	@Test
 	public void ajouterContrat() {
-		Contrat contrat = new Contrat(new Date(), "CDI", 1200.5f);
-		int ref = employeService.ajouterContrat(contrat);
+		
 		List<Contrat> contrats = (List<Contrat>) contratRepository.findAll();
 		assertNotNull("échouer pour ajouter Contrat",
-				contrats.stream().filter(c -> c.getReference() == ref).findAny().orElseThrow(null));
+				contrats.stream().filter(c -> c.getReference() == idC).findAny().orElseThrow(null));
 	}
 
 	@Test
 	public void affecterContratAEmploye() {
-		Contrat contrat = new Contrat(new Date(), "CDI", 1200.5f);
-		Employe employe = new Employe("ahmed", "ben abdallah", "ahmed@gmail.com", false, Role.TECHNICIEN);
-		int idC = employeService.ajouterContrat(contrat);
-		int idE = employeService.ajouterEmploye(employe);
-		employeService.affecterContratAEmploye(idC, idE);
+		int contratId=employeService.ajouterContrat(new Contrat());
+		employeService.affecterContratAEmploye(contratId, employeId);
+		Employe e=employeRepository.findById(employeId).orElseThrow(null);
 		assertTrue("affectation contrat a employer echouer",
-				employeRepository.findById(idE).orElseThrow(null).getContrat().getReference() == idC);
+				e.getContrat().getReference() == contratId);
 	}
 
 	@Test
 	public void getEmployePrenomById() {
-		String lastName="ben Abdallah";
-		Employe e = new Employe("Ahmed",lastName , "@gmail.com", false, Role.TECHNICIEN);
-		int id = employeService.ajouterEmploye(e);
-		assertEquals("échouer pour reccuperer email employer", employeRepository.findById(id).orElseThrow(null).getPrenom(),
+		assertEquals("échouer pour reccuperer email employer", employeRepository.findById(employeId).orElseThrow(null).getPrenom(),
 				lastName);
-
 	}
 
 	@Test
@@ -107,26 +121,13 @@ public class EmployeTest {
 	@Test
 	public void deleteContratById() {
 		Contrat contrat = new Contrat(new Date(), "CDI", 1200.5f);
-		int ref = employeService.ajouterContrat(contrat);
-		employeService.deleteContratById(ref);
-		assertFalse("échouer pour supprimer employer", contratRepository.findById(ref).isPresent());
+		int contratId = employeService.ajouterContrat(contrat);
+		employeService.deleteContratById(contratId);
+		assertFalse("échouer pour supprimer employer", contratRepository.findById(contratId).isPresent());
 	}
+	
+	
 
-	@Test
-	public void getNombreEmployeJPQL() {
-		List<Employe> list = (List<Employe>) employeRepository.findAll();
-		assertEquals("erreur pour recuperer nombre employer", list.size(), employeService.getNombreEmployeJPQL());
-	}
-
-	@Test
-	public void getAllEmployeNamesJPQL() {
-		int i = 0;
-		List<String> employes = employeService.getAllEmployeNamesJPQL();
-		for (Employe employe : employeRepository.findAll()) {
-			assertEquals("erreur a la verification du nom" + i, employe.getNom(), employes.get(i));
-			i++;
-		}
-	}
 	
 	
 

@@ -69,60 +69,7 @@ public class IControllerEmployeImpl  {
 	}
 
 	
-	public int getNombreEmployeJPQL() {
-		
-		return iemployeservice.getNombreEmployeJPQL();
-	}
-
 	
-	public List<String> getAllEmployeNamesJPQL() {
-		
-		return iemployeservice.getAllEmployeNamesJPQL();
-	}
-
-	
-	public List<Employe> getAllEmployeByEntreprise(Entreprise entreprise) {
-		return iemployeservice.getAllEmployeByEntreprise(entreprise);
-	}
-
-
-	public void mettreAjourEmailByEmployeIdJPQL(String email, int employeId) {	
-	iemployeservice.mettreAjourEmailByEmployeIdJPQL(email, employeId);
-		
-	}
-
-
-	public void deleteAllContratJPQL() {
-		iemployeservice.deleteAllContratJPQL();
-		
-	}
-
-	
-	public float getSalaireByEmployeIdJPQL(int employeId) {
-		
-		return iemployeservice.getSalaireByEmployeIdJPQL(employeId);
-	}
-
-
-	public Double getSalaireMoyenByDepartementId(int departementId) {
-		
-		return iemployeservice.getSalaireMoyenByDepartementId(departementId);
-	}
-
-	
-	
-	public List<Timesheet> getTimesheetsByMissionAndDate(Employe employe, Mission mission, Date dateDebut,
-			Date dateFin) {
-		return iemployeservice.getTimesheetsByMissionAndDate(employe, mission, dateDebut, dateFin);
-	}
-
-
-
-
-	public List<Employe> getAllEmployes() {
-		
-		return iemployeservice.getAllEmployes();
-	}
 
 	
 	

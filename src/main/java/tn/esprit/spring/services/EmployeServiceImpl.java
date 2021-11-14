@@ -2,7 +2,6 @@
 package tn.esprit.spring.services;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 
@@ -14,9 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import tn.esprit.spring.entities.Contrat;
 import tn.esprit.spring.entities.Departement;
 import tn.esprit.spring.entities.Employe;
-import tn.esprit.spring.entities.Entreprise;
-import tn.esprit.spring.entities.Mission;
-import tn.esprit.spring.entities.Timesheet;
 import tn.esprit.spring.repository.ContratRepository;
 import tn.esprit.spring.repository.DepartementRepository;
 import tn.esprit.spring.repository.EmployeRepository;
@@ -65,7 +61,7 @@ public class EmployeServiceImpl implements IEmployeService {
 	}
 
 	@Transactional
-	public void affecterEmployeADepartement(int employeId, int depId) {
+	public Boolean affecterEmployeADepartement(int employeId, int depId) {
 		try {
 			logger.info("je suis dans affecterEmployeADepartement");
 			Departement depManagedEntity = deptRepoistory.findById(depId).orElseThrow(null);
@@ -83,14 +79,16 @@ public class EmployeServiceImpl implements IEmployeService {
 				depManagedEntity.getEmployes().add(employeManagedEntity);
 
 			}
+			return true;
 		} catch (Exception e) {
 			logger.error("erreur dans affecterEmployeADepartement:" + e);
+			return false;
 		}
 
 	}
 
 	@Transactional
-	public void desaffecterEmployeDuDepartement(int employeId, int depId) {
+	public Boolean desaffecterEmployeDuDepartement(int employeId, int depId) {
 		try {
 			logger.info("je suis dans desaffecterEmployeDuDepartement");
 			Departement dep = deptRepoistory.findById(depId).orElseThrow(null);
@@ -102,10 +100,13 @@ public class EmployeServiceImpl implements IEmployeService {
 					dep.getEmployes().remove(index);
 					break;// a revoir
 				}
-				logger.info("je viens de finir l'operation desaffecterEmployeDuDepartement");
+				
 			}
+			logger.info("je viens de finir l'operation desaffecterEmployeDuDepartement");
+			return true;
 		} catch (Exception e) {
 			logger.error("erreur dans desaffecterEmployeDuDepartement:" + e);
+			return false;
 		}
 
 	}
@@ -180,109 +181,6 @@ public class EmployeServiceImpl implements IEmployeService {
 
 	}
 
-	public int getNombreEmployeJPQL() {
-		try {
-			logger.info("je suis dans getNombreEmployeJPQL");
-			return employeRepository.countemp();
-		} catch (Exception e) {
-			logger.error("erreur dans getNombreEmployeJPQL :" + e);
-			return 0;
-		}
-
-	}
-
-	public List<String> getAllEmployeNamesJPQL() {
-		try {
-			logger.info("je suis dans getNombreEmployeJPQL");
-			return employeRepository.employeNames();
-		} catch (Exception e) {
-			logger.error("erreur dans getAllEmployeNamesJPQL :" + e);
-			return null;
-		}
-
-	}
-
-	public List<Employe> getAllEmployeByEntreprise(Entreprise entreprise) {
-		try {
-			logger.info("je suis dans getAllEmployeByEntreprise");
-			return employeRepository.getAllEmployeByEntreprisec(entreprise);
-		} catch (Exception e) {
-			logger.error("erreur dans getAllEmployeByEntreprise :" + e);
-			return null;
-		}
-
-	}
-
-	public void mettreAjourEmailByEmployeIdJPQL(String email, int employeId) {
-		try {
-			logger.info("je suis dans mettreAjourEmailByEmployeIdJPQL");
-			employeRepository.mettreAjourEmailByEmployeIdJPQL(email, employeId);
-
-		} catch (Exception e) {
-			logger.error("erreur dans getAllEmployeByEntreprise :" + e);
-		}
-
-	}
-
-	public void deleteAllContratJPQL() {
-		try {
-			logger.info("je suis dans deleteAllContratJPQL");
-			employeRepository.deleteAllContratJPQL();
-		} catch (Exception e) {
-			logger.error("erreur dans deleteAllContratJPQL :" + e);
-		}
-
-	}
-
-	public float getSalaireByEmployeIdJPQL(int employeId) {
-		try {
-			logger.info("je suis dans getSalaireByEmployeIdJPQL");
-			logger.debug("je viens de terminer l'operation getSalaireByEmployeIdJPQL");
-			return employeRepository.getSalaireByEmployeIdJPQL(employeId);
-		} catch (Exception e) {
-			logger.error("erreur dans getSalaireByEmployeIdJPQL :" + e);
-			return 0;
-		}
-
-	}
-
-	public Double getSalaireMoyenByDepartementId(int departementId) {
-		try {
-			logger.info("je suis dans getSalaireMoyenByDepartementId");
-			logger.debug("je viens de terminer l'operation getSalaireMoyenByDepartementId");
-			return employeRepository.getSalaireMoyenByDepartementId(departementId);
-		} catch (Exception e) {
-			logger.error("erreur dans getSalaireMoyenByDepartementId :" + e);
-			return 0.0;
-		}
-
-	}
-
-	public List<Timesheet> getTimesheetsByMissionAndDate(Employe employe, Mission mission, Date dateDebut,
-			Date dateFin) {
-		try {
-			logger.info("je suis dans getTimesheetsByMissionAndDate");
-			logger.debug("je viens de terminer l'operation getTimesheetsByMissionAndDate");
-			return timesheetRepository.getTimesheetsByMissionAndDate(employe, mission, dateDebut, dateFin);
-		} catch (Exception e) {
-			logger.error("erreur dans getTimesheetsByMissionAndDate :" + e);
-			return new ArrayList<>();
-		}
-
-	}
-
-	public List<Employe> getAllEmployes() {
-		
-		try {
-			logger.info("je suis dans getAllEmployes");
-			logger.debug("je viens de terminer l'operation getAllEmployes");
-			return  (List<Employe>) employeRepository.findAll();
-		} catch (Exception e) {
-			logger.error("erreur dans getAllEmployes :" + e);
-			return new ArrayList<>();
-		}
-
-	}
 	
 
 }
